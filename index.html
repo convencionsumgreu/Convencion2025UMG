@@ -60,19 +60,26 @@
       letter-spacing: 1px;
     }
 
-    /* Botón de música */
+    /* 🎵 Estilo moderno para el botón de música */
     #boton-musica {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      padding: 10px 15px;
-      background-color: rgba(0,0,0,0.6);
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #3498db, #8e44ad);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       z-index: 2000;
-      font-size: 1.2em;
+      font-size: 1em;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    #boton-musica:hover {
+      background: linear-gradient(135deg, #2980b9, #6c3483);
+      transform: scale(1.05);
     }
 
     @media (max-width: 600px) {
