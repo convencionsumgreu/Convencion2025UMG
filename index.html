@@ -5,81 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Convención UMG 2025</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-image: url('src/seminario_convencion.jpg');
-      background-size: contain;
+      background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
       background-attachment: fixed;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
       color: #fff;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      padding: 1rem;
     }
 
     .floating-message {
-      position: fixed;
-      top: 300px;
-      left: 50%;
-      transform: translateX(-50%) translateY(0);
       background-color: rgba(255, 77, 77, 0.9);
-      color: white;
-      padding: 15px 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      font-size: 1.2em;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      font-size: 1.3em;
       font-weight: bold;
-      z-index: 1000;
-      max-width: 90%;
-      text-align: center;
       animation: float 3s ease-in-out infinite;
+      max-width: 600px;
+      width: 100%;
     }
 
     @keyframes float {
       0%, 100% {
-        transform: translateX(-50%) translateY(0);
+        transform: translateY(0);
       }
       50% {
-        transform: translateX(-50%) translateY(-10px);
+        transform: translateY(-10px);
       }
+    }
+
+    .dias-texto {
+      margin-top: 10px;
+      font-size: 1.1em;
     }
 
     .countdown {
-      margin-top: 10px;
-      font-size: 1em;
-      color: #fff;
+      margin-top: 8px;
+      font-size: 2.5em;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
 
-    /* Responsive para pantallas pequeñas */
-    @media (max-width: 768px) {
-      body {
-        background-size: cover;
-      }
+    /* Botón de música */
+    #boton-musica {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background-color: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 2000;
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 600px) {
       .floating-message {
-        top: 150px;
-        padding: 10px 20px;
-        font-size: 1em;
+        font-size: 1.1em;
+        padding: 15px 20px;
+      }
+
+      .countdown {
+        font-size: 1.8em;
       }
     }
   </style>
 </head>
 <body>
   <div class="floating-message">
-    Está cerca nuestra gran convención UMG 2025
+    ¡¡Está cerca nuestra gran convención UMG 2025!!
+    <div class="dias-texto" id="dias-texto"></div>
     <div class="countdown" id="countdown"></div>
   </div>
 
+  <!-- Audio y botón -->
+  <audio id="musica" src="src/musica_fondo.mp3" loop></audio>
+  <button id="boton-musica" onclick="toggleMusica()">🎵 Play</button>
+
   <script>
+    // Contador regresivo
     function updateCountdown() {
       const targetDate = new Date('2025-10-10T00:00:00');
       const now = new Date();
       const diff = targetDate - now;
 
       if (diff <= 0) {
+        document.getElementById('dias-texto').innerText = '';
         document.getElementById('countdown').innerText = '¡El evento ha comenzado!';
         return;
       }
@@ -89,12 +116,43 @@
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      document.getElementById('countdown').innerText =
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      document.getElementById('dias-texto').innerText = `${days} día${days !== 1 ? 's' : ''}`;
+      document.getElementById('countdown').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
-
     setInterval(updateCountdown, 1000);
     updateCountdown();
+
+    // Control de música
+    const audio = document.getElementById('musica');
+    const boton = document.getElementById('boton-musica');
+    let reproduciendo = false;
+
+    function toggleMusica() {
+      if (reproduciendo) {
+        audio.pause();
+        boton.innerText = '🎵 Play';
+      } else {
+        audio.play();
+        boton.innerText = '⏸️ Pausa';
+      }
+      reproduciendo = !reproduciendo;
+    }
+
+    // Reproduce música tras primer clic o scroll
+    function activarMusicaAlInteractuar() {
+      if (!reproduciendo) {
+        audio.play().then(() => {
+          boton.innerText = '⏸️ Pausa';
+          reproduciendo = true;
+        }).catch((error) => {
+          console.log('No se pudo reproducir automáticamente:', error);
+        });
+      }
+      window.removeEventListener('click', activarMusicaAlInteractuar);
+      window.removeEventListener('scroll', activarMusicaAlInteractuar);
+    }
+    window.addEventListener('click', activarMusicaAlInteractuar);
+    window.addEventListener('scroll', activarMusicaAlInteractuar);
   </script>
 </body>
 </html>
