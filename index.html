@@ -50,17 +50,17 @@
 
     .dias-texto {
       margin-top: 10px;
-      font-size: 1.1em;
+      font-size: 2.5em;
+      font-weight: bold;
     }
 
     .countdown {
       margin-top: 8px;
-      font-size: 2.5em;
+      font-size: 2em;
       font-weight: bold;
       letter-spacing: 1px;
     }
 
-    /* 🎵 Estilo moderno para el botón de música */
     #boton-musica {
       position: fixed;
       bottom: 20px;
@@ -105,16 +105,22 @@
   <audio id="musica" src="src/musica_fondo.mp3" loop></audio>
   <button id="boton-musica" onclick="toggleMusica()">🎵 Play</button>
 
+  <!-- Confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <script>
-    // Contador regresivo
+    const targetDate = new Date('2025-10-10T00:00:00');
+    let interval;
+
     function updateCountdown() {
-      const targetDate = new Date('2025-10-10T00:00:00');
       const now = new Date();
       const diff = targetDate - now;
 
       if (diff <= 0) {
         document.getElementById('dias-texto').innerText = '';
         document.getElementById('countdown').innerText = '¡El evento ha comenzado!';
+        lanzarConfeti(); // 🎉
+        clearInterval(interval);
         return;
       }
 
@@ -124,12 +130,47 @@
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
       document.getElementById('dias-texto').innerText = `${days} día${days !== 1 ? 's' : ''}`;
-      document.getElementById('countdown').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      document.getElementById('countdown').innerText = `${hours}h ${minutes}m ${seconds}s`;
     }
-    setInterval(updateCountdown, 1000);
+
+    interval = setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // Control de música
+    // 🎉 Confeti
+    function lanzarConfeti() {
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 },
+        zIndex: 999
+      });
+
+      const duration = 3 * 1000;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          zIndex: 999
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          zIndex: 999
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+
+    // 🎵 Control de música
     const audio = document.getElementById('musica');
     const boton = document.getElementById('boton-musica');
     let reproduciendo = false;
@@ -145,7 +186,7 @@
       reproduciendo = !reproduciendo;
     }
 
-    // Reproduce música tras primer clic o scroll
+    // Auto play al interactuar
     function activarMusicaAlInteractuar() {
       if (!reproduciendo) {
         audio.play().then(() => {
@@ -158,6 +199,7 @@
       window.removeEventListener('click', activarMusicaAlInteractuar);
       window.removeEventListener('scroll', activarMusicaAlInteractuar);
     }
+
     window.addEventListener('click', activarMusicaAlInteractuar);
     window.addEventListener('scroll', activarMusicaAlInteractuar);
   </script>
